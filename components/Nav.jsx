@@ -1,5 +1,126 @@
-import React from "react";
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { signIn, signOut, getProviders } from "next-auth/react";
 
 export default function Nav() {
-  return <nav className="z-3 fixed w-full text-center">Nav</nav>;
+  const [providers, setProviders] = useState(null);
+  const [toggleDropdown, setToggleDropdown] = useState(false);
+
+  const session = true;
+
+  useEffect(() => {
+    (async () => {
+      const res = await getProviders();
+      setProviders(res);
+    })();
+  });
+
+  const Avatar = ({ mobile = false }) => {
+    return (
+      <Image
+        src=""
+        width={37}
+        height={37}
+        className="rounded-full cursor-pointer"
+        alt="profile"
+        onClick={mobile ? () => setToggleDropdown(!toggleDropdown) : {}}
+      />
+    );
+  };
+
+  const ProvidersButton = ({ providers }) => {
+    return (
+      <>
+        {providers &&
+          Object.values(providers).map((provider) => (
+            <button
+              key={provider.name}
+              onClick={() => {
+                signIn(provider.id);
+              }}
+              className="black_btn"
+            >
+              Sign In
+            </button>
+          ))}
+      </>
+    );
+  };
+
+  return (
+    <nav className="z-20 sticky flex justify-between items-center w-full text-center mb-16 pt-3">
+      <Link href="/" className="ml-8 flex_center gap-2">
+        <Image
+          src="/next.svg"
+          alt="logo"
+          width={100}
+          height={100}
+          className="object-contain"
+        />
+        <p className="logo_text ml-2">Hands-on</p>
+      </Link>
+
+      {/* Desktop Navigation */}
+      <div className="hidden sm:flex">
+        {session ? (
+          <div className="flex gap-3 md:gap-5">
+            <Link href="/create" className="black_btn">
+              Create New
+            </Link>
+
+            <button onClick={signOut} className="outline_btn">
+              Sign Out
+            </button>
+
+            <Link href="/profile">
+              <Avatar />
+            </Link>
+          </div>
+        ) : (
+          <ProvidersButton providers={providers} />
+        )}
+      </div>
+
+      {/* Mobile Navigation */}
+      <div className="sm:hidden flex relative">
+        {session ? (
+          <>
+            <Avatar mobile />
+            {toggleDropdown && (
+              <div className="dropdown">
+                <Link
+                  href="/profile"
+                  className="dropdown_link"
+                  onClick={() => setToggleDropdown(false)}
+                >
+                  My Profile
+                </Link>
+                <Link
+                  href="/create"
+                  className="dropdown_link"
+                  onClick={() => setToggleDropdown(false)}
+                >
+                  Create New
+                </Link>
+                <button
+                  onClick={() => {
+                    setToggleDropdown(false);
+                    signOut();
+                  }}
+                  className="black_btn"
+                >
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          <ProvidersButton providers />
+        )}
+      </div>
+    </nav>
+  );
 }
