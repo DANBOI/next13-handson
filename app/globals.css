@@ -94,7 +94,7 @@
 }
 
 .dropdown {
-  @apply absolute right-0 top-full mt-3 w-full p-2 rounded-lg bg-white whitespace-nowrap min-w-fit flex flex-col gap-3 justify-evenly items-center;
+  @apply absolute right-1 top-full mt-3 p-2 rounded-lg bg-white whitespace-nowrap min-w-fit flex flex-col gap-3 justify-evenly items-center;
 }
 
 .dropdown_link {

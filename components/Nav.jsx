@@ -3,25 +3,25 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { signIn, signOut, getProviders } from "next-auth/react";
+import { signIn, signOut, useSession, getProviders } from "next-auth/react";
 
 export default function Nav() {
   const [providers, setProviders] = useState(null);
   const [toggleDropdown, setToggleDropdown] = useState(false);
 
-  const session = true;
+  const { data: session } = useSession();
 
   useEffect(() => {
     (async () => {
       const res = await getProviders();
       setProviders(res);
     })();
-  });
+  }, []);
 
   const Avatar = ({ mobile = false }) => {
     return (
       <Image
-        src=""
+        src={session?.user.image}
         width={37}
         height={37}
         className="rounded-full cursor-pointer"
@@ -35,15 +35,14 @@ export default function Nav() {
     return (
       <>
         {providers &&
-          Object.values(providers).map((provider) => (
+          Object.values(providers).map(({ id, name }) => (
             <button
-              key={provider.name}
-              onClick={() => {
-                signIn(provider.id);
-              }}
+              key={name}
+              onClick={signIn.bind(this, id)}
               className="black_btn"
             >
-              Sign In
+              Sign in
+              <span className="hidden sm:block">&nbsp;with {name}</span>
             </button>
           ))}
       </>
@@ -51,8 +50,8 @@ export default function Nav() {
   };
 
   return (
-    <nav className="z-20 sticky flex justify-between items-center w-full text-center mb-16 pt-3">
-      <Link href="/" className="ml-8 flex_center gap-2">
+    <nav className="z-20 sticky flex justify-between items-center w-full text-center mb-16 pt-3 px-8">
+      <Link href="/" className="flex_center gap-2">
         <Image
           src="/next.svg"
           alt="logo"
@@ -65,7 +64,7 @@ export default function Nav() {
 
       {/* Desktop Navigation */}
       <div className="hidden sm:flex">
-        {session ? (
+        {session?.user ? (
           <div className="flex gap-3 md:gap-5">
             <Link href="/create" className="black_btn">
               Create New
@@ -85,8 +84,8 @@ export default function Nav() {
       </div>
 
       {/* Mobile Navigation */}
-      <div className="sm:hidden flex relative">
-        {session ? (
+      <div className="sm:hidden flex ">
+        {session?.user ? (
           <>
             <Avatar mobile />
             {toggleDropdown && (
@@ -118,7 +117,7 @@ export default function Nav() {
             )}
           </>
         ) : (
-          <ProvidersButton providers />
+          <ProvidersButton providers={providers} />
         )}
       </div>
     </nav>
