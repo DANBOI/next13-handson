@@ -21,7 +21,7 @@ export default function RootLayout({ children, session }) {
             <div className="gradient" />
           </div>
           <Nav />
-          {children}
+          <main className="app">{children}</main>
         </SessionProvider>
       </body>
     </html>

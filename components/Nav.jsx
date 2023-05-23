@@ -50,7 +50,7 @@ export default function Nav() {
   };
 
   return (
-    <nav className="z-20 sticky flex justify-between items-center w-full text-center mb-16 pt-3 px-8">
+    <nav className="z-20 sticky flex justify-between items-center max-w-7xl mx-auto w-full text-center mb-16 pt-3 px-8">
       <Link href="/" className="flex_center gap-2">
         <Image
           src="/next.svg"
