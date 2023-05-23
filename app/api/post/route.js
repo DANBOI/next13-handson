@@ -1,6 +1,18 @@
 import Post from "@models/postModel";
 import connectDB from "@utils/db";
 
+export const GET = async (req) => {
+  try {
+    await connectDB();
+
+    const posts = await Post.find({}).populate("author"); //join ref
+
+    return new Response(JSON.stringify(posts), { status: 200 });
+  } catch (error) {
+    return new Response("Failed to fetch all posts", { status: 500 });
+  }
+};
+
 export const POST = async (req) => {
   const { userId, content, tag } = await req.json();
 
