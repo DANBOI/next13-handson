@@ -1,44 +1,37 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 
 export default function Card({
+  isMyProfile = false,
   userId,
   post,
   handleEdit,
   handleDelete,
   handleTagClick,
 }) {
-  const pathName = usePathname();
   const router = useRouter();
+  const pathName = usePathname();
   const [copied, setCopied] = useState(false);
 
-  //for test
-  const session = { user: { id: "646b5f8820006f4aaeebab3a" } };
-
-  const editable =
-    userId === session?.user.id && pathName.startsWith("/profile");
-
-  const handleProfileClick = () => {
-    const userName = userId === session?.user.id ? "My" : post.author.username;
-    router.push(`/profile/${userId}?userName=${userName}`);
-  };
+  const handleProfileClick = () => router.push(`/profile/${userId}`);
 
   const handleCopy = () => {
     //★windows.navigator
     navigator.clipboard.writeText(post.content);
     setCopied(true);
-    setTimeout(() => setCopied(false), 3000);
+    setTimeout(() => setCopied(false), 1000);
   };
 
   return (
     <div className="post_card">
       <div className="flex justify-between items-start gap-5">
         <div
-          className="flex-1 flex justify-start items-center gap-3 cursor-pointer"
+          className={`flex-1 flex justify-start items-center gap-3 ${
+            !pathName.startsWith("/profile") && "cursor-pointer"
+          }`}
           onClick={handleProfileClick}
         >
           <Image
@@ -77,7 +70,7 @@ export default function Card({
         {post.tag}
       </p>
 
-      {editable && (
+      {isMyProfile && (
         <div className="mt-5 flex_center gap-4 border-t border-gray-100 pt-3 text-sm">
           <p
             className="text-cyan-500 cursor-pointer"

@@ -10,6 +10,7 @@ export default function Nav() {
   const [toggleDropdown, setToggleDropdown] = useState(false);
 
   const { data: session } = useSession();
+  const profileLink = `/profile/${session?.user.id}`;
 
   useEffect(() => {
     (async () => {
@@ -26,7 +27,7 @@ export default function Nav() {
         height={37}
         className="rounded-full cursor-pointer"
         alt="profile"
-        onClick={mobile ? () => setToggleDropdown(!toggleDropdown) : {}}
+        onClick={() => mobile && setToggleDropdown(!toggleDropdown)}
       />
     );
   };
@@ -74,7 +75,7 @@ export default function Nav() {
               Sign Out
             </button>
 
-            <Link href="/profile">
+            <Link href={profileLink}>
               <Avatar />
             </Link>
           </div>
@@ -91,7 +92,7 @@ export default function Nav() {
             {toggleDropdown && (
               <div className="dropdown">
                 <Link
-                  href="/profile"
+                  href={profileLink}
                   className="dropdown_link"
                   onClick={() => setToggleDropdown(false)}
                 >

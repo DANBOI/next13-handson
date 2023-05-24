@@ -6,7 +6,6 @@ export const GET = async (req, { params }) => {
     await connectDB();
 
     const posts = await Post.find({ author: params.id }).populate("author");
-    console.log(posts);
     return new Response(JSON.stringify(posts), { status: 200 });
   } catch (error) {
     return new Response("Failed to fetch posts created by user", {

@@ -1,53 +1,54 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useParams, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Card from "@components/Card";
 
-export default function Profile() {
-  const [myPosts, setMyPosts] = useState([]);
-
+export default function UserProfile({ params }) {
+  const [userPosts, setUserPosts] = useState([]);
+  const [userName, setUserName] = useState("");
   const router = useRouter();
-  const params = useParams();
-  const searchParams = useSearchParams();
+  const { data: session } = useSession();
+  //for test
+  // const session = { user: { id: "646b5f8820006f4aaeebab3a" } };
+
   const { userId } = params; //    /profile/:userId
-  const userName = searchParams.get("userName");
+  const isMyProfile = userId === session?.user.id;
 
   useEffect(() => {
     userId &&
       (async () => {
-        const res = await fetch(`/api/users/${userId}/posts`);
-        const data = await res.json();
-        setMyPosts(data);
+        let res = await fetch(`/api/users/${userId}/posts`);
+        setUserPosts(await res.json());
+
+        res = await fetch(`/api/users/${userId}`);
+        const { username } = await res.json();
+        setUserName(username);
       })();
   }, [userId]);
 
-  const handleEdit = (post) => {
-    router.push(`/update?id=${post._id}`);
-  };
+  const handleEdit = (post) => router.push(`/update?postId=${post._id}`);
 
   const handleDelete = async (post) => {
     const hasConfirmed = confirm("Are you sure you want to delete this post?");
+    if (!hasConfirmed) return;
+    try {
+      await fetch(`/api/posts/${post._id.toString()}`, { method: "DELETE" });
 
-    if (hasConfirmed) {
-      try {
-        await fetch(`/api/posts/${post._id.toString()}`, {
-          method: "DELETE",
-        });
-
-        const filteredPosts = myPosts.filter(({ _id }) => _id !== post._id);
-
-        setMyPosts(filteredPosts);
-      } catch (error) {
-        console.log(error);
-      }
+      const filteredPosts = userPosts.filter(({ _id }) => _id !== post._id);
+      setUserPosts(filteredPosts);
+    } catch (error) {
+      console.log(error);
     }
   };
 
   return (
     <section className="w-full">
       <h1 className="head_text text-left">
-        <span className="blue_gradient">{userName}'s Profile</span>
+        <span className="blue_gradient">
+          {isMyProfile ? "My" : `${userName}'s`} Profile
+        </span>
       </h1>
       <p className="lead_text text-left">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero,
@@ -58,8 +59,9 @@ export default function Profile() {
 
       {/* Posts list */}
       <div className="mt-16 post_layout">
-        {myPosts.map((post) => (
+        {userPosts.map((post) => (
           <Card
+            isMyProfile={isMyProfile}
             key={post._id}
             userId={userId}
             post={post}
