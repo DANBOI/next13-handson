@@ -7,7 +7,7 @@ export default function Home() {
       <h1 className="head_text capitalize">
         search & create
         <br />
-        <span className="blue_gradient"> your posts</span>
+        <span className="blue_gradient"> fresh posts</span>
       </h1>
       <p className="lead_text">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore dolore

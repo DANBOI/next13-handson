@@ -20,7 +20,7 @@ export default function CreatePost() {
       const res = await fetch("/api/post", {
         method: "POST",
         body: JSON.stringify({
-          userId: session?.user.id,
+          userId: session?.user.id || "646b5f8820006f4aaeebab3a",
           content: post.content,
           tag: post.tag,
         }),

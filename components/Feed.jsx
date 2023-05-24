@@ -13,7 +13,7 @@ export default function Feed() {
 
   useEffect(() => {
     (async () => {
-      const res = await fetch("/api/post");
+      const res = await fetch("/api/posts");
       const data = await res.json();
       setAllPosts(data);
     })();
@@ -66,7 +66,12 @@ export default function Feed() {
       {/* Posts list */}
       <div className="mt-16 post_layout">
         {searchedResults.map((post) => (
-          <Card key={post._id} post={post} handleTagClick={handleTagClick} />
+          <Card
+            userId={post.author._id.toString()}
+            key={post._id.toString()}
+            post={post}
+            handleTagClick={handleTagClick}
+          />
         ))}
       </div>
     </section>
