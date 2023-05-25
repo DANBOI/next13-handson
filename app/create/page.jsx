@@ -8,6 +8,7 @@ import Form from "@components/Form";
 export default function CreatePost() {
   const router = useRouter();
   const { data: session } = useSession();
+  const userId = session?.user.id;
 
   const [submitting, setSubmitting] = useState(false);
   const [post, setPost] = useState({ content: "", tag: "" });
@@ -19,10 +20,7 @@ export default function CreatePost() {
     try {
       const res = await fetch("/api/posts", {
         method: "POST",
-        body: JSON.stringify({
-          userId: session?.user.id,
-          ...post,
-        }),
+        body: JSON.stringify({ userId, ...post }),
       });
 
       if (res.ok) {
